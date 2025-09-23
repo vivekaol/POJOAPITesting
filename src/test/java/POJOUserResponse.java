@@ -14,32 +14,17 @@ public class POJOUserResponse {
 	}
 
 	@JsonProperty("job")
-	public void setResName(String resName) {
-		this.resName = resName;
-	}
-	@JsonProperty("id")
 	public String getResJob() {
 		return resJob;
 	}
-	 @JsonProperty("createdAt")
-	public void setResJob(String resJob) {
-		this.resJob = resJob;
-	}
 
+	@JsonProperty("id")
 	public String getResId() {
 		return resId;
 	}
 
-	public void setResId(String resId) {
-		this.resId = resId;
-	}
-
+	@JsonProperty("createdAt")
 	public String getResCreatedAt() {
 		return resCreatedAt;
 	}
-
-	public void setResCreatedAt(String resCreatedAt) {
-		this.resCreatedAt = resCreatedAt;
-	}
-
 }
