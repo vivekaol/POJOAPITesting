@@ -1,3 +1,5 @@
+package ForgotPassword;
+
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 import org.testng.Assert;
@@ -16,18 +18,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 // 2. Serialize
 // 3. Jsonpath - Hamcrest
 
-public class APITesting {
+public class ForgotPasswordAPITesting {
 
 	static void JsonPathValidation() {
 
-		String requestbody = "{\r\n" + "    \"name\": \"kumar\",\r\n" + "    \"job\": \"leader\"\r\n" + "}";
+		String requestbody = "{\r\n"
+				+ "  \"email\": \"test@example.com\"\r\n"
+				+ "}";
 
-		baseURI = "https://reqres.in";
+		baseURI = "http://127.0.0.1:8000/api/forgot-password/";
 
-		Response response = given().log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1")
-				.body(requestbody)
-
-				.when().post("/api/users").then().extract().response();
+		Response response = 
+				given()
+					.log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
+				.when()
+					.post("/api/users")
+				.then()
+					.extract().response();
 
 		JsonPath js = response.jsonPath();
 
@@ -36,41 +43,40 @@ public class APITesting {
 
 	static void HamcrestValidation() {
 
-		String requestbody = "{\r\n" + "    \"name\": \"kumar\",\r\n" + "    \"job\": \"leader\"\r\n" + "}";
+		String requestbody = "{\r\n"
+				+ "  \"email\": \"test@example.com\"\r\n"
+				+ "}";
 
-		baseURI = "https://reqres.in";
+		baseURI = "http://127.0.0.1:8000/api/forgot-password/";
 
 		given()
 			.log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
 		.when()
 			.post("/api/users")
 		.then()
-			.assertThat().body("name", equalTo("kumar"));
+			.assertThat().body("name", equalTo("John"));
 
 		System.out.println("Assertion Pass ");
 	}
 
 	static void PojoSerializationValidation() {
 
-		POJOUserRequest userRequest = new POJOUserRequest();
-		userRequest.setName("Vivek");
-		userRequest.setJob("Software");
+		ForgotPasswordPojoRequest userRequest = new ForgotPasswordPojoRequest();
+		userRequest.setEmail("test@example.com");
+		
+		baseURI = "http://127.0.0.1:8000/api/forgot-password/";
 
-		baseURI = "https://reqres.in";
-
-		POJOUserResponse UserResponse = given().log().all().contentType(ContentType.JSON)
+		ForgotPasswordPojoResponse userResponse = given().log().all().contentType(ContentType.JSON)
 				.header("x-api-key", "reqres-free-v1").body(userRequest)
 				.when()
 					.post("/api/users")
 				.then()
 					//.getBody()
 					.extract()
-					.as(POJOUserResponse.class);
+					.as(ForgotPasswordPojoResponse.class);
 
-		System.out.println("Printing the usernaem rspone :: " + UserResponse.getResName());
-		System.out.println("Printing the job rspone :: " + UserResponse.getResJob());
-		System.out.println("Printing the ID rspone :: " + UserResponse.getResId());
-		System.out.println("Printing the createdAt rspone :: " + UserResponse.getResCreatedAt());
+		System.out.println("Printing the getMessage response :: " +userResponse.getMessage());
+
 
 		System.out.println("Test cases passed :: ");
 	}

@@ -1,3 +1,5 @@
+package ResetPassword;
+
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 import org.testng.Assert;
@@ -16,18 +18,24 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 // 2. Serialize
 // 3. Jsonpath - Hamcrest
 
-public class APITesting {
+public class ResetPasswordAPITesting {
 
 	static void JsonPathValidation() {
 
-		String requestbody = "{\r\n" + "    \"name\": \"kumar\",\r\n" + "    \"job\": \"leader\"\r\n" + "}";
+		String requestbody = "{\r\n"
+				+ "  \"token\": \"{{refresh_token}}\",\r\n"
+				+ "  \"new_password\": \"newpassword123\"\r\n"
+				+ "}";
 
-		baseURI = "https://reqres.in";
+		baseURI = "https://52984699b31f.ngrok-free.app/api/reset-password/";
 
-		Response response = given().log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1")
-				.body(requestbody)
-
-				.when().post("/api/users").then().extract().response();
+		Response response = 
+				given()
+					.log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
+				.when()
+					.post("/api/users")
+				.then()
+					.extract().response();
 
 		JsonPath js = response.jsonPath();
 
@@ -36,42 +44,42 @@ public class APITesting {
 
 	static void HamcrestValidation() {
 
-		String requestbody = "{\r\n" + "    \"name\": \"kumar\",\r\n" + "    \"job\": \"leader\"\r\n" + "}";
+		String requestbody = "{\r\n"
+				+ "  \"token\": \"{{refresh_token}}\",\r\n"
+				+ "  \"new_password\": \"newpassword123\"\r\n"
+				+ "}";
 
-		baseURI = "https://reqres.in";
+		baseURI = "https://52984699b31f.ngrok-free.app/api/reset-password/";
 
 		given()
 			.log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
 		.when()
 			.post("/api/users")
 		.then()
-			.assertThat().body("name", equalTo("kumar"));
+			.assertThat().body("name", equalTo("John"));
 
 		System.out.println("Assertion Pass ");
 	}
 
 	static void PojoSerializationValidation() {
 
-		POJOUserRequest userRequest = new POJOUserRequest();
-		userRequest.setName("Vivek");
-		userRequest.setJob("Software");
+		ResetPasswordPojoRequest userRequest = new ResetPasswordPojoRequest();
+		userRequest.setToken("test@example.com");
+		userRequest.setNew_password("password123");
+		
+		baseURI = "https://52984699b31f.ngrok-free.app/api/reset-password/";
 
-		baseURI = "https://reqres.in";
-
-		POJOUserResponse UserResponse = given().log().all().contentType(ContentType.JSON)
+		ResetPasswordPojoResponse userResponse = given().log().all().contentType(ContentType.JSON)
 				.header("x-api-key", "reqres-free-v1").body(userRequest)
 				.when()
 					.post("/api/users")
 				.then()
 					//.getBody()
 					.extract()
-					.as(POJOUserResponse.class);
+					.as(ResetPasswordPojoResponse.class);
 
-		System.out.println("Printing the usernaem rspone :: " + UserResponse.getResName());
-		System.out.println("Printing the job rspone :: " + UserResponse.getResJob());
-		System.out.println("Printing the ID rspone :: " + UserResponse.getResId());
-		System.out.println("Printing the createdAt rspone :: " + UserResponse.getResCreatedAt());
-
+		System.out.println("Printing the getMessage response :: " +userResponse.getMessage());
+		
 		System.out.println("Test cases passed :: ");
 	}
 
