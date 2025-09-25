@@ -20,17 +20,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class LogoutUserAPITesting {
 
-	static void JsonPathValidation() {
+	static void JsonPathValidation(String requestbody, String baseURI, String endpoint) {
 // Looks like request is blank
-		String requestbody = "";
-
-		baseURI = "http://127.0.0.1:8000/api/logout/";
 
 		Response response = 
 				given()
-					.log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
+					.log().all().baseUri(baseURI).contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
 				.when()
-					.post("/api/users")
+					.post(endpoint)
 				.then()
 					.extract().response();
 
@@ -39,34 +36,27 @@ public class LogoutUserAPITesting {
 		System.out.println("Pring jsonpath name :: " + js.getString("name"));
 	}
 
-	static void HamcrestValidation() {
-
-		String requestbody = "";
-
-		baseURI = "http://127.0.0.1:8000/api/logout/";
+	static void HamcrestValidation(String requestbody, String baseURI, String endpoint) {
 
 		given()
-			.log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
+			.log().all().baseUri(baseURI).contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
 		.when()
-			.post("/api/users")
+			.post(endpoint)
 		.then()
 			.assertThat().body("name", equalTo("John"));
 
 		System.out.println("Assertion Pass ");
 	}
 
-	static void PojoSerializationValidation() {
+	static void PojoSerializationValidation(String baseURI, String endpoint) {
 
 		LogoutUserPojoRequest userRequest = new LogoutUserPojoRequest();
 		//userRequest.setEmail("test@example.com");
 		
-		
-		baseURI = "http://127.0.0.1:8000/api/logout/";
-
-		LogoutUserPojoResponse userResponse = given().log().all().contentType(ContentType.JSON)
+		LogoutUserPojoResponse userResponse = given().log().all().baseUri(baseURI).contentType(ContentType.JSON)
 				.header("x-api-key", "reqres-free-v1").body(userRequest)
 				.when()
-					.post("/api/users")
+					.post(endpoint)
 				.then()
 					//.getBody()
 					.extract()
@@ -78,10 +68,15 @@ public class LogoutUserAPITesting {
 	}
 
 	public static void main(String[] args) {
+		
+		String reqbody = "";
 
-		// JsonPathValidation();
-		//HamcrestValidation();
-		PojoSerializationValidation();
+		String base_URI = "http://127.0.0.1:8000";
+		String end_point = "/api/logout/";
+
+		// JsonPathValidation(reqbody, base_URI, end_point);
+		//HamcrestValidation(reqbody, base_URI, end_point);
+		PojoSerializationValidation(base_URI, end_point);
 
 	}
 }

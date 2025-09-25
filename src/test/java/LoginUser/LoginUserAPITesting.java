@@ -20,20 +20,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class LoginUserAPITesting {
 
-	static void JsonPathValidation() {
-
-		String requestbody = "{\r\n"
-				+ "  \"email\": \"test@example.com\",\r\n"
-				+ "  \"password\": \"password123\"\r\n"
-				+ "}";
-
-		baseURI = "http://127.0.0.1:8000/api/login/";
+	static void JsonPathValidation(String requestbody, String baseURI, String endpoint) {
 
 		Response response = 
 				given()
-					.log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
+					.log().all().baseUri(baseURI).contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
 				.when()
-					.post("/api/users")
+					.post(endpoint)
 				.then()
 					.extract().response();
 
@@ -42,37 +35,28 @@ public class LoginUserAPITesting {
 		System.out.println("Pring jsonpath name :: " + js.getString("name"));
 	}
 
-	static void HamcrestValidation() {
-
-		String requestbody = "{\r\n"
-				+ "  \"email\": \"test@example.com\",\r\n"
-				+ "  \"password\": \"password123\"\r\n"
-				+ "}";
-
-		baseURI = "http://127.0.0.1:8000/api/login/";
+	static void HamcrestValidation(String requestbody, String baseURI, String endpoint) {
 
 		given()
-			.log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
+			.log().all().baseUri(baseURI).contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
 		.when()
-			.post("/api/users")
+			.post(endpoint)
 		.then()
 			.assertThat().body("name", equalTo("John"));
 
 		System.out.println("Assertion Pass ");
 	}
 
-	static void PojoSerializationValidation() {
+	static void PojoSerializationValidation(String baseURI, String endpoint) {
 
 		LoginUserPojoRequest userRequest = new LoginUserPojoRequest();
 		userRequest.setEmail("test@example.com");
 		userRequest.setPassword("password123");
-		
-		baseURI = "http://127.0.0.1:8000/api/login/";
 
-		LoginUserPojoResponse userResponse = given().log().all().contentType(ContentType.JSON)
+		LoginUserPojoResponse userResponse = given().baseUri(baseURI).log().all().contentType(ContentType.JSON)
 				.header("x-api-key", "reqres-free-v1").body(userRequest)
 				.when()
-					.post("/api/users")
+					.post(endpoint)
 				.then()
 					//.getBody()
 					.extract()
@@ -89,10 +73,18 @@ public class LoginUserAPITesting {
 	}
 
 	public static void main(String[] args) {
+		
+		String reqbody = "{\r\n"
+				+ "  \"email\": \"test@example.com\",\r\n"
+				+ "  \"password\": \"password123\"\r\n"
+				+ "}";
 
-		// JsonPathValidation();
-		//HamcrestValidation();
-		PojoSerializationValidation();
+		String base_URI = "http://127.0.0.1:8000";
+		String end_point = "/api/login/";
+
+		// JsonPathValidation(reqbody, base_URI, end_point);
+		//HamcrestValidation(reqbody, base_URI, end_point);
+		PojoSerializationValidation(base_URI, end_point);
 
 	}
 }

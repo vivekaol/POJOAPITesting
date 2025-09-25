@@ -20,23 +20,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class RegisterUserAPITesting {
 
-	static void JsonPathValidation() {
-
-		String requestbody = "{\r\n"
-				+ "  \"email\": \"test@example.com\",\r\n"
-				+ "  \"password\": \"password123\",\r\n"
-				+ "  \"full_name\": \"John\",\r\n"
-				+ "  \"last_name\": \"Doe\",\r\n"
-				+ "  \"role\": \"Admin\"\r\n"
-				+ "}";
-
-		baseURI = "http://127.0.0.1:8000/api/register/";
+	static void JsonPathValidation(String requestbody, String baseURI, String endpoint) {
 
 		Response response = 
 				given()
-					.log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
+					.log().all().baseUri(baseURI).contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
 				.when()
-					.post("/api/users")
+					.post(endpoint)
 				.then()
 					.extract().response();
 
@@ -45,29 +35,19 @@ public class RegisterUserAPITesting {
 		System.out.println("Pring jsonpath name :: " + js.getString("name"));
 	}
 
-	static void HamcrestValidation() {
-
-		String requestbody = "{\r\n"
-				+ "  \"email\": \"test@example.com\",\r\n"
-				+ "  \"password\": \"password123\",\r\n"
-				+ "  \"full_name\": \"John\",\r\n"
-				+ "  \"last_name\": \"Doe\",\r\n"
-				+ "  \"role\": \"Admin\"\r\n"
-				+ "}";
-
-		baseURI = "http://127.0.0.1:8000/api/register/";
+	static void HamcrestValidation(String requestbody, String baseURI, String endpoint) {
 
 		given()
-			.log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
+			.log().all().baseUri(baseURI).contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
 		.when()
-			.post("/api/users")
+			.post(endpoint)
 		.then()
 			.assertThat().body("name", equalTo("John"));
 
 		System.out.println("Assertion Pass ");
 	}
 
-	static void PojoSerializationValidation() {
+	static void PojoSerializationValidation(String baseURI, String endpoint) {
 
 		RegisterUserPojoRequest userRequest = new RegisterUserPojoRequest();
 		userRequest.setEmail("test@example.com");
@@ -75,13 +55,11 @@ public class RegisterUserAPITesting {
 		userRequest.setFull_name("John");
 		userRequest.setLast_name("Doe");
 		userRequest.setRole("Admin");
-		
-		baseURI = "http://127.0.0.1:8000/api/register/";
 
-		RegisterUserPojoResponse userResponse = given().log().all().contentType(ContentType.JSON)
+		RegisterUserPojoResponse userResponse = given().log().all().baseUri(baseURI).contentType(ContentType.JSON)
 				.header("x-api-key", "reqres-free-v1").body(userRequest)
 				.when()
-					.post("/api/users")
+					.post(endpoint)
 				.then()
 					//.getBody()
 					.extract()
@@ -98,9 +76,21 @@ public class RegisterUserAPITesting {
 
 	public static void main(String[] args) {
 
-		// JsonPathValidation();
-		//HamcrestValidation();
-		PojoSerializationValidation();
+		String requestbody = "{\r\n"
+				+ "  \"email\": \"test@example.com\",\r\n"
+				+ "  \"password\": \"password123\",\r\n"
+				+ "  \"full_name\": \"John\",\r\n"
+				+ "  \"last_name\": \"Doe\",\r\n"
+				+ "  \"role\": \"Admin\"\r\n"
+				+ "}";
+
+		String base_URI = "http://127.0.0.1:8000";
+		String end_piont = "/api/register/";
+		
+		
+		// JsonPathValidation(reqbody, base_URI, end_piont);
+		//HamcrestValidation(reqbody, base_URI, end_piont);
+		PojoSerializationValidation(base_URI, end_piont);
 
 	}
 }

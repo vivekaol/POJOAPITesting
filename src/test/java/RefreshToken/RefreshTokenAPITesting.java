@@ -20,19 +20,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class RefreshTokenAPITesting {
 
-	static void JsonPathValidation() {
-
-		String requestbody = "{\r\n"
-				+ "  \"refresh_token\": \"<refresh_token>\"\r\n"
-				+ "}";
-
-		baseURI = "http://127.0.0.1:8000/api/token/refresh/";
+	static void JsonPathValidation(String requestbody, String baseURI, String endpoint) {
 
 		Response response = 
 				given()
-					.log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
+					.log().all().baseUri(baseURI).contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
 				.when()
-					.post("/api/users")
+					.post(endpoint)
 				.then()
 					.extract().response();
 
@@ -41,35 +35,27 @@ public class RefreshTokenAPITesting {
 		System.out.println("Pring jsonpath name :: " + js.getString("name"));
 	}
 
-	static void HamcrestValidation() {
-
-		String requestbody = "{\r\n"
-				+ "  \"refresh_token\": \"<refresh_token>\"\r\n"
-				+ "}";
-
-		baseURI = "http://127.0.0.1:8000/api/token/refresh/";
+	static void HamcrestValidation(String requestbody, String baseURI, String endpoint) {
 
 		given()
-			.log().all().contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
+			.log().all().baseUri(baseURI).contentType(ContentType.JSON).header("x-api-key", "reqres-free-v1").body(requestbody)
 		.when()
-			.post("/api/users")
+			.post(endpoint)
 		.then()
 			.assertThat().body("name", equalTo("John"));
 
 		System.out.println("Assertion Pass ");
 	}
 
-	static void PojoSerializationValidation() {
+	static void PojoSerializationValidation(String baseURI, String endpoint) {
 
 		RefreshTokenPojoRequest userRequest = new RefreshTokenPojoRequest();
 		userRequest.setRefresh_token("test@example.com");
-		
-		baseURI = "http://127.0.0.1:8000/api/token/refresh/";
-
-		RefreshTokenPojoResponse userResponse = given().log().all().contentType(ContentType.JSON)
+	
+		RefreshTokenPojoResponse userResponse = given().log().all().baseUri(baseURI).contentType(ContentType.JSON)
 				.header("x-api-key", "reqres-free-v1").body(userRequest)
 				.when()
-					.post("/api/users")
+					.post(endpoint)
 				.then()
 					//.getBody()
 					.extract()
@@ -82,10 +68,18 @@ public class RefreshTokenAPITesting {
 	}
 
 	public static void main(String[] args) {
+		
+		String reqbody = "{\r\n"
+				+ "  \"refresh_token\": \"<refresh_token>\"\r\n"
+				+ "}";
 
-		// JsonPathValidation();
-		//HamcrestValidation();
-		PojoSerializationValidation();
+		String base_URI = "http://127.0.0.1:8000";
+		String end_point = "/api/token/refresh/";
+
+
+		// JsonPathValidation(reqbody, base_URI);
+		//HamcrestValidation(reqbody, base_URI);
+		PojoSerializationValidation(base_URI, end_point);
 
 	}
 }
